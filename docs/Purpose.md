@@ -6,7 +6,7 @@ When novice developers start making scripts they are focused on quickly making s
 
 1. Only using print. Using print is quick but very easily becomes useless. There is no output file so can only be seen on the current screen so if it closes that information is lost. There is also no way of setting levels so is not able to choose between displaying information or debugging. 
 2. Writing to a text file. Setting up a useful logger can be intricate and as a workaround will create a function to log some variables to a file. This will normally only contain information to solve a specific problem and minimal in guiding the dev to fixing an issue. This will also be an issue with traceability of script runs as this will not hold enough information of the script run to replicate the run.
-3. Using a single log file. If a dev has setup logging but log everything to one file it will either get overwritten if they don't copy it to a backup or many log files will be created in the script root and will flood the project with log files.
+3. Using a single log file. If a dev has created logging but log everything to one file it will either get overwritten if they don't copy it to a backup or many log files will be created in the script root and will flood the project with log files.
 
 ## Solution
 

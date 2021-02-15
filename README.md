@@ -1,4 +1,4 @@
-# setup-logging
+# easy-logging
 Easy setup for a simple management free logger which can be added to any project. Includes a GUI
 
 Two loggers are set up for the project, one to record console information to a file and another to file that allows for in depth debugging. 
@@ -7,13 +7,13 @@ Quite console can be use if they user wants to use the project as a background t
 
 The first time you call the setup it will open up a GUI which will allow you to configure your logging.
 
-![Image of Yaktocat](https://github.com/akgre/setup-logging/blob/main/docs/img/setup_gui.PNG?raw=true)
+![Image of Yaktocat](https://github.com/akgre/easy-logging/blob/main/docs/img/setup_gui.PNG?raw=true)
 
 ## Usage
 In your project add:
 ```Python
 from loguru import logger
-from setup_logging import setup_logging
+from easy_logging import setup_logging
 ```
 At the beginning of your program call the setup
 ```Python
