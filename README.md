@@ -7,7 +7,7 @@ Quite console can be use if they user wants to use the project as a background t
 
 The first time you call the setup it will open up a GUI which will allow you to configure your logging.
 
-![setup_gui](C:\Users\Zircon\Desktop\python_projects\setup-logging\docs\img\setup_gui.PNG)
+![Image of Yaktocat](https://github.com/akgre/setup-logging/blob/main/docs/img/setup_gui.PNG?raw=true)
 
 ## Usage
 In your project add:
