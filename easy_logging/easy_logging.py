@@ -56,13 +56,13 @@ def get_user_input_gui():
     verbose_level = logging_options['verbose_level']
     verbose_file_name = logging_options['verbose_file_name']
 
-    layout = [[sg.Text('Quiet Console:', size=(14, 1)), sg.Check(text='',default=quiet_console, key='-CONSOLE LOGGING-', pad=(2, 1)),
+    layout = [[sg.Text('Quiet Console:', size=(14, 1)), sg.Check(text='', default=quiet_console, key='-CONSOLE LOGGING-', pad=(2, 1)),
                sg.Text('Will not display in the console. Will still output in console log if enabled')],
-              [sg.Text('Console Logging:', size=(14, 1)), sg.Check(text='', default=enable_console_file, key='-CONSOLE FILE-', pad=(2,1)),
-               sg.Text('Level:'), sg.Combo(default_value=console_level, values=['DEBUG', 'INFO', 'WARNING', 'ERROR'], size=(10,0), key='-CONSOLE LEVEL-'),
+              [sg.Text('Console Logging:', size=(14, 1)), sg.Check(text='', default=enable_console_file, key='-CONSOLE FILE-', pad=(2, 1)),
+               sg.Text('Level:'), sg.Combo(default_value=console_level, values=['DEBUG', 'INFO', 'WARNING', 'ERROR'], size=(10, 0), key='-CONSOLE LEVEL-'),
                sg.Text('Console File Name:', size=(14, 1)), sg.InputText(key='-CONSOLE FILE NAME-', default_text=console_file_name)],
               [sg.Text('Verbose Logging:', size=(14, 1)), sg.Check(text='', default=enable_verbose_file, key='-VERBOSE FILE-', pad=(2, 1)),
-               sg.Text('Level:'), sg.Combo(default_value=verbose_level, values=['DEBUG', 'INFO', 'WARNING', 'ERROR'], size=(10,0), key='-VERBOSE LEVEL-'),
+               sg.Text('Level:'), sg.Combo(default_value=verbose_level, values=['DEBUG', 'INFO', 'WARNING', 'ERROR'], size=(10, 0), key='-VERBOSE LEVEL-'),
                sg.Text('Verbose File Name:', size=(14, 1)), sg.InputText(key='-VERBOSE NAME-', default_text=verbose_file_name)],
               [sg.Text('Log File Directory:', size=(14, 1)), sg.InputText(key='-lOG DIR-', default_text=log_records_dir, size=(84, 0)),
                sg.FolderBrowse(button_text='...', target='-lOG DIR-', initial_folder=log_records_dir_browse, pad=(1, 0))],

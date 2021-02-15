@@ -138,3 +138,5 @@ create_pip_env.sh
 .toml
 LOGS/
 .log
+/cmd_run_script.bat
+/CMB.bat
