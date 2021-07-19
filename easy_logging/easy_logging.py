@@ -16,6 +16,7 @@ import datetime
 import PySimpleGUI as sg
 from pathlib import Path
 from argparse import ArgumentParser
+from distutils import util
 
 from loguru import logger
 
@@ -97,39 +98,57 @@ def get_user_input_gui():
 
 # Main logging setup. loads the options then creates the loggers.
 # ------------------------------------------------------------------------------
-def setup_logging(user_input=False, log_records_dir=None, quiet_console=None, console_level=None,
+def setup_logging(project_name='', user_input=None, log_records_dir=None, quiet_console=None, console_level=None,
                   enable_console_file=None, console_file_name=None, enable_verbose_file=None, verbose_level=None,
-                  verbose_file_name=None, file_rotation=None, project_name=''):
+                  verbose_file_name=None, file_rotation=None):
+
+    overwrite_options = False
 
     if log_records_dir is not None:
         logging_options['log_records_dir'] = log_records_dir
+        overwrite_options = True
     if quiet_console is not None:
         logging_options['quiet_console'] = quiet_console
+        overwrite_options = True
     if console_level is not None:
         logging_options['console_level'] = console_level
+        overwrite_options = True
     if enable_console_file is not None:
         logging_options['enable_console_file'] = enable_console_file
+        overwrite_options = True
     if console_file_name is not None:
         logging_options['console_file_name'] = console_file_name
+        overwrite_options = True
     if enable_verbose_file is not None:
         logging_options['enable_verbose_file'] = enable_verbose_file
+        overwrite_options = True
     if verbose_level is not None:
         logging_options['verbose_level'] = verbose_level
+        overwrite_options = True
     if verbose_file_name is not None:
         logging_options['verbose_file_name'] = verbose_file_name
+        overwrite_options = True
     if file_rotation is not None:
         logging_options['file_rotation'] = file_rotation
+        overwrite_options = True
 
     first_time_setup = False
     if not Path(logging_options_fn).is_file():
         first_time_setup = True
+
+    # GUI selection. If an argument is used and a selection is modified in the gui then it overwrites that argument
+    # Default (no user_input parameter) is to only open the GUI on the first time the script is called.
+    # If the user_input is set the False then no GUI will used.
+    # If the user_input is to True the the GUI is always called.
+    if user_input or ((user_input is None) and first_time_setup):
+        if not get_user_input_gui() and first_time_setup:
+            # There are no logger setting so raise an error that logging can not happen.
+            exit("Canceled. No Logger Settings Saved. Not able to use logger. Stopping script")
+    # if this is the first time the script has run or an parameter is used the write options to file.
+    # only write to file if no GUI is used as the GUI has priority to overwrite any user parameters.
+    elif first_time_setup or overwrite_options:
         with open(logging_options_fn, 'w') as opt_file:
             toml.dump(logging_options, opt_file)
-
-    # GUI selection. If an argument is used and selection is modified in the gui then it overwrites that argument
-    if user_input or first_time_setup:
-        if not get_user_input_gui():
-            return False
 
     log_records_dir = logging_options['log_records_dir']
     quiet_console = logging_options['quiet_console']
@@ -145,9 +164,9 @@ def setup_logging(user_input=False, log_records_dir=None, quiet_console=None, co
     log_records_dir = log_records_dir.format(cwd=Path().cwd(), project_name=project_name)
     Path(log_records_dir).mkdir(parents=True, exist_ok=True)
     # format file names string
-    console_file_name = console_file_name.format(datetime=datetime.datetime.now().strftime("%y-%m-%d_%H-%M-%S"),
+    console_file_name = console_file_name.format(datetime=datetime.datetime.now().strftime("%y-%m-%dT%H-%M-%S"),
                                                  project_name=project_name)
-    verbose_file_name = verbose_file_name.format(datetime=datetime.datetime.now().strftime("%y-%m-%d_%H-%M-%S"),
+    verbose_file_name = verbose_file_name.format(datetime=datetime.datetime.now().strftime("%y-%m-%dT%H-%M-%S"),
                                                  project_name=project_name)
 
     if not quiet_console:
@@ -166,7 +185,7 @@ def setup_logging(user_input=False, log_records_dir=None, quiet_console=None, co
             logger.add(sys.stderr, level=console_level)
             config = {
                 "handlers": [
-                    {"sink": sys.stdout, "format": "<level>{message:80}</level> | "
+                    {"sink": sys.stdout, "format": "<level>{message:120}</level> | "
                                                    "<green>{time:YY-MM-DD HH:mm:SSS}</green> | "
                                                    "<level>{level:<8}</level> | "
                                                    "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan>",
@@ -181,11 +200,11 @@ def setup_logging(user_input=False, log_records_dir=None, quiet_console=None, co
 
     if enable_console_file:
         console_file_path = Path(log_records_dir, console_file_name)
-        logger.add(console_file_path, format="{message: <80}", level=console_level, rotation=file_rotation)
-        # logger.add(console_file_name, format="{message: <80} | "
-        #                                     "{time:YY-MM-DD HH:mm:ss.SSS} | "
-        #                                     "{level: <8} | "
-        #                                     "{name}:{function}:{line}", level=setup['log_console_level'])
+        # logger.add(console_file_path, format="{message: <80}", level=console_level, rotation=file_rotation)
+        logger.add(console_file_path, format="{message: <120} | "
+                                             "{time:YY-MM-DD HH:mm:ss.SSS} | "
+                                             "{level: <8} | "
+                                             "{name}:{function}:{line}", level=console_level, rotation=file_rotation, mode="w")
         logger.debug('Set up console logging to file')
 
     if enable_verbose_file:
@@ -194,7 +213,7 @@ def setup_logging(user_input=False, log_records_dir=None, quiet_console=None, co
         logger.add(verbose_file_path, format="{time:YY-MM-DD HH:mm:ss.SSS} | "
                                              "{level: <8} | "
                                              "{name}:{function:}:{line:} | "
-                                             "{message}", level=verbose_level, rotation=file_rotation)
+                                             "{message}", level=verbose_level, rotation=file_rotation, mode="w")
         logger.debug('Set up file logging')
 
     return True
@@ -214,15 +233,15 @@ def _main():
                         help="Display extra debugging information and metrics."
                         )
     parser.add_argument("--user", "-u",
-                        action="store_true", dest="user", default=True,
-                        help="Show the options selection GUIcl"
+                        dest="user", type=util.strtobool, default=None, nargs='?', const=True,
+                        help="Show the options selection GUI"
                         )
 
     args = parser.parse_args()
 
     try:
         # if logging gui is cancelled then exit
-        if not setup_logging(user_input=args.user, project_name='dev'):
+        if not setup_logging(user_input=args.user, project_name=__package_name__):
             exit()
     except KeyboardInterrupt:
         logger.warning('Keyboard Interrupt from user')
